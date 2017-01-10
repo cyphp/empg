@@ -1,6 +1,6 @@
 <?php
 
-namespace Empg\HttpsPostRequest;
+namespace Empg\HttpsPost\Request;
 
 use Empg\Mpg\Globals;
 

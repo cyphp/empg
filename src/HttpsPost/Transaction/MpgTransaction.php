@@ -2,9 +2,8 @@
 
 namespace Empg\HttpsPost\Transaction;
 
-class MpgTransaction
+class MpgTransaction extends AbstractTransaction
 {
-    public $txn;
     public $custInfo = null;
     public $recur = null;
     public $cvd = null;
@@ -14,11 +13,6 @@ class MpgTransaction
     public $sessionAccountInfo = null;
     public $attributeAccountInfo = null;
     public $level23Data = null;
-
-    public function __construct($txn)
-    {
-        $this->txn = $txn;
-    }
 
     public function getCustInfo()
     {
@@ -39,11 +33,6 @@ class MpgTransaction
     public function setRecur($recur)
     {
         $this->recur = $recur;
-    }
-
-    public function getTransaction()
-    {
-        return $this->txn;
     }
 
     public function getCvdInfo()

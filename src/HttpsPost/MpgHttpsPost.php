@@ -3,6 +3,7 @@
 namespace Empg\HttpsPost;
 
 use Empg\HttpsPost\Response\MpgResponse;
+use Empg\HttpsPost\Request\MpgRequest;
 
 class MpgHttpsPost
 {
@@ -15,7 +16,7 @@ class MpgHttpsPost
     protected $txnType;
     protected $isMPI;
 
-    public function __constrcut($storeid, $apitoken, $mpgRequestOBJ)
+    public function __constrcut($storeid, $apitoken, MpgRequest $mpgRequestOBJ)
     {
         $this->store_id = $storeid;
         $this->api_token = $apitoken;

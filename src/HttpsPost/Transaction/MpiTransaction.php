@@ -2,17 +2,6 @@
 
 namespace Empg\HttpsPost\Transaction;
 
-class MpiTransaction
+class MpiTransaction extends AbstractTransaction
 {
-    public $txn;
-
-    public function __construct($txn)
-    {
-        $this->txn = $txn;
-    }
-
-    public function getTransaction()
-    {
-        return $this->txn;
-    }
 }

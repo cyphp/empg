@@ -2,21 +2,10 @@
 
 namespace Empg\HttpsPost\Transaction;
 
-class RiskTransaction
+class RiskTransaction extends AbstractTransaction
 {
-    public $txn;
     public $attributeAccountInfo = null;
     public $sessionAccountInfo = null;
-
-    public function __construct($txn)
-    {
-        $this->txn = $txn;
-    }
-
-    public function getTransaction()
-    {
-        return $this->txn;
-    }
 
     public function getAttributeAccountInfo()
     {

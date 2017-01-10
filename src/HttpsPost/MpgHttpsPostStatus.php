@@ -2,7 +2,8 @@
 
 namespace Empg\HttpsPost;
 
-use Empg\Response\MpgResponse;
+use Empg\HttpsPost\Response\MpgResponse;
+use Empg\HttpsPost\Request\MpgRequest;
 
 class MpgHttpsPostStatus
 {
@@ -14,7 +15,7 @@ class MpgHttpsPostStatus
     public $mpgResponse;
     public $xmlString;
 
-    public function __construct($storeid, $apitoken, $status, $mpgRequestOBJ)
+    public function __construct($storeid, $apitoken, $status, MpgRequest $mpgRequestOBJ)
     {
         $this->store_id = $storeid;
         $this->api_token = $apitoken;

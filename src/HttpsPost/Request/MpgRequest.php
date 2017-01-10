@@ -239,7 +239,7 @@ class MpgRequest
         }
     }
 
-    public function setTestMode($state)
+    public function setTestMode(bool $state = false)
     {
         if ($state === true) {
             $this->testMode = '_TEST';

@@ -4,7 +4,7 @@ namespace Empg\HttpsPost;
 
 use Empg\Mpg\Globals;
 
-class HttpsPost
+class HttpsPostHandler
 {
     protected $url;
     protected $dataToSend;

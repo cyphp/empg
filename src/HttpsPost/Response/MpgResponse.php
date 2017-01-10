@@ -9,24 +9,24 @@ class MpgResponse
     public $p; //parser
 
     public $currentTag;
-    public $purchaseHash = array();
+    public $purchaseHash = [];
     public $refundHash;
-    public $correctionHash = array();
+    public $correctionHash = [];
     public $isBatchTotals;
     public $term_id;
-    public $receiptHash = array();
-    public $ecrHash = array();
+    public $receiptHash = [];
+    public $ecrHash = [];
     public $CardType;
     public $currentTxnType;
-    public $ecrs = array();
-    public $cards = array();
-    public $cardHash = array();
+    public $ecrs = [];
+    public $cards = [];
+    public $cardHash = [];
 
     //specifically for Resolver transactions
     public $resolveData;
     public $resolveDataHash;
     public $data_key = '';
-    public $DataKeys = array();
+    public $DataKeys = [];
     public $isResolveData;
 
     //specifically for VdotMe transactions
@@ -36,7 +36,7 @@ class MpgResponse
     //specifically for MasterPass transactions
     public $isPaypass;
     public $isPaypassInfo;
-    public $masterPassData = array();
+    public $masterPassData = [];
 
     //specifically for MPI transactions
     public $ACSUrl;
@@ -46,8 +46,8 @@ class MpgResponse
     public $isResults;
     public $isRule;
     public $ruleName;
-    public $results = array();
-    public $rules = array();
+    public $results = [];
+    public $rules = [];
 
     public function __construct($xmlString)
     {
@@ -1113,7 +1113,7 @@ class MpgResponse
                 case 'term_id':
                     $this->term_id = $data;
                     array_push($this->ecrs, $this->term_id);
-                    $this->cardHash[$data] = array();
+                    $this->cardHash[$data] = [];
                     break;
                 case 'closed':
                     $ecrHash = $this->ecrHash;
@@ -1208,13 +1208,13 @@ class MpgResponse
         } elseif ($this->currentTag == 'BankTotals') {
             $this->isBatchTotals = 1;
         } elseif ($this->currentTag == 'Purchase') {
-            $this->purchaseHash[$this->term_id][$this->CardType] = array();
+            $this->purchaseHash[$this->term_id][$this->CardType] = [];
             $this->currentTxnType = 'Purchase';
         } elseif ($this->currentTag == 'Refund') {
-            $this->refundHash[$this->term_id][$this->CardType] = array();
+            $this->refundHash[$this->term_id][$this->CardType] = [];
             $this->currentTxnType = 'Refund';
         } elseif ($this->currentTag == 'Correction') {
-            $this->correctionHash[$this->term_id][$this->CardType] = array();
+            $this->correctionHash[$this->term_id][$this->CardType] = [];
             $this->currentTxnType = 'Correction';
         } elseif ($this->currentTag == 'Result') {
             $this->isResults = 1;
@@ -1230,7 +1230,7 @@ class MpgResponse
             $this->isResolveData = 0;
             if ($this->data_key != '') {
                 $this->resolveDataHash[$this->data_key] = $this->resolveData;
-                $this->resolveData = array();
+                $this->resolveData = [];
             }
         } elseif ($this->currentTag == 'VDotMeInfo') {
             $this->isVdotMeInfo = 0;

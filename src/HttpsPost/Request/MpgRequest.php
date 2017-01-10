@@ -3,9 +3,8 @@
 namespace Empg\HttpsPostRequest;
 
 use Empg\Mpg\Globals;
-use Empg\HttpsPost\Transaction\MpgTransaction;
 
-class MpgRequest
+class MpgRequest extends AbstractRequest
 {
     protected $txnTypes = [
         //Basic
@@ -51,7 +50,7 @@ class MpgRequest
         'res_cavv_preauth_cc' => ['data_key', 'order_id', 'cust_id', 'amount', 'cavv', 'crypt_type', 'dynamic_descriptor', 'expdate'],
         'res_cavv_purchase_cc' => ['data_key', 'order_id', 'cust_id', 'amount', 'cavv', 'crypt_type', 'dynamic_descriptor', 'expdate'],
         'res_delete' => ['data_key'],
-        'res_get_expiring' => [),
+        'res_get_expiring' => [],
         'res_ind_refund_cc' => ['data_key', 'order_id', 'cust_id', 'amount', 'crypt_type', 'dynamic_descriptor'],
         'res_iscorporatecard' => ['data_key'],
         'res_lookup_full' => ['data_key'],
@@ -137,7 +136,7 @@ class MpgRequest
         'us_res_add_pinless' => ['cust_id', 'phone', 'email', 'note', 'pan', 'expdate', 'presentation_type', 'p_account_number'],
         'us_res_add_token' => ['cust_id', 'phone', 'email', 'note', 'data_key', 'crypt_type', 'expdate'],
         'us_res_delete' => ['data_key'],
-        'us_res_get_expiring' => [),
+        'us_res_get_expiring' => [],
         'us_res_ind_refund_ach' => ['data_key', 'order_id', 'cust_id', 'amount'],
         'us_res_ind_refund_cc' => ['data_key', 'order_id', 'cust_id', 'amount', 'crypt_type', 'dynamic_descriptor'],
         'us_res_iscorporatecard' => ['data_key'],
@@ -208,24 +207,7 @@ class MpgRequest
     ];
 
     protected $xmlString;
-    protected $txnArray;
-    protected $procCountryCode = '';
-    protected $testMode = '';
     protected $isMPI = '';
-
-    public function __construct(MpgTransaction ...$txn)
-    {
-        if (empty($txn)) {
-            throw new \Exception('MpgRequest requires at least one MpgTransaction object');
-        }
-
-        $this->txnArray = $txn;
-    }
-
-    public function setProcCountryCode($countryCode)
-    {
-        $this->procCountryCode = ((strcmp(strtolower($countryCode), 'us') >= 0) ? '_US' : '');
-    }
 
     public function getIsMPI()
     {
@@ -234,18 +216,9 @@ class MpgRequest
         if ((strcmp($txnType, 'txn') === 0) || (strcmp($txnType, 'acs') === 0)) {
             //$this->setIsMPI(true);
             return true;
-        } else {
-            return false;
         }
-    }
 
-    public function setTestMode(bool $state = false)
-    {
-        if ($state === true) {
-            $this->testMode = '_TEST';
-        } else {
-            $this->testMode = '';
-        }
+        return false;
     }
 
     public function getTransactionType()
@@ -311,7 +284,7 @@ class MpgRequest
             for ($i = 0; $i < $txnTypeArrayLen; ++$i) {
                 //Will only add to the XML if the tag was passed in by merchant
                 if (array_key_exists($txnTypeArray[$i], $txn)) {
-                    $txnXMLString  .= "<$txnTypeArray[$i]>".//begin tag
+                    $txnXMLString .= "<$txnTypeArray[$i]>".//begin tag
                         $txn[$txnTypeArray[$i]].// data
                         "</$txnTypeArray[$i]>"; //end tag
                 }

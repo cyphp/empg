@@ -2,25 +2,13 @@
 
 namespace Empg\HttpsPost;
 
+use Empg\HttpsPost\Response\RiskResponse;
+
 class RiskHttpsPost
 {
-    public $api_token;
-    public $store_id;
-    public $riskRequest;
-    public $riskResponse;
-
-    public function __construct($storeid, $apitoken, $riskRequestOBJ)
+    public function getRiskResponse()
     {
-        $this->store_id = $storeid;
-        $this->api_token = $apitoken;
-        $this->riskRequest = $riskRequestOBJ;
-
-        $dataToSend = $this->toXML();
-
-        $url = $this->riskRequest->getURL();
-
-        $httpsPost = new HttpsPost($url, $dataToSend);
-        $response = $httpsPost->getHttpsResponse();
+        $response = $this->getResponse();
 
         if (!$response) {
             $response = '<?xml version="1.0"?><response><receipt>'.
@@ -34,24 +22,17 @@ class RiskHttpsPost
                     '</receipt></response>';
         }
 
-        //print "Got a xml response of: \n$response\n";
-        $this->riskResponse = new RiskResponse($response);
-    }
-
-    public function getRiskResponse()
-    {
-        return $this->riskResponse;
+        return new RiskResponse($response);
     }
 
     public function toXML()
     {
-        $req = $this->riskRequest;
-        $reqXMLString = $req->toXML();
+        $reqXMLString = $this->request->toXML();
 
         $xmlString = '<?xml version="1.0"?>'.
                     '<request>'.
-                    "<store_id>$this->store_id</store_id>".
-                    "<api_token>$this->api_token</api_token>".
+                    "<store_id>{$this->storeId}</store_id>".
+                    "<api_token>{$this->apiToken}</api_token>".
                     '<risk>'.
                     $reqXMLString.
                     '</risk>'.

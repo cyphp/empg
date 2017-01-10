@@ -4,39 +4,12 @@ namespace Empg\HttpsPost\Request;
 
 use Empg\Mpg\Globals;
 
-class MpiRequest
+class MpiRequest extends AbstractRequest
 {
-    public $txnTypes = array(
-        'txn' => array('xid', 'amount', 'pan', 'expdate', 'MD', 'merchantUrl', 'accept', 'userAgent', 'currency', 'recurFreq', 'recurEnd', 'install'),
-        'acs' => array('PaRes', 'MD'),
-    );
-
-    public $txnArray;
-    public $procCountryCode = '';
-    public $testMode = '';
-
-    public function __construct($txn)
-    {
-        if (is_array($txn)) {
-            $this->txnArray = $txn;
-        } else {
-            $temp[0] = $txn;
-            $this->txnArray = $temp;
-        }
-    }
-    public function setProcCountryCode($countryCode)
-    {
-        $this->procCountryCode = ((strcmp(strtolower($countryCode), 'us') >= 0) ? '_US' : '');
-    }
-
-    public function setTestMode($state)
-    {
-        if ($state === true) {
-            $this->testMode = '_TEST';
-        } else {
-            $this->testMode = '';
-        }
-    }
+    protected $txnTypes = [
+        'txn' => ['xid', 'amount', 'pan', 'expdate', 'MD', 'merchantUrl', 'accept', 'userAgent', 'currency', 'recurFreq', 'recurEnd', 'install'],
+        'acs' => ['PaRes', 'MD'],
+    ];
 
     public function getURL()
     {
@@ -75,7 +48,7 @@ class MpiRequest
             for ($i = 0; $i < $txnTypeArrayLen; ++$i) {
                 //Will only add to the XML if the tag was passed in by merchant
                 if (array_key_exists($txnTypeArray[$i], $txn)) {
-                    $txnXMLString  .= "<$txnTypeArray[$i]>".//begin tag
+                    $txnXMLString .= "<$txnTypeArray[$i]>".//begin tag
                         $txn[$txnTypeArray[$i]].// data
                         "</$txnTypeArray[$i]>"; //end tag
                 }

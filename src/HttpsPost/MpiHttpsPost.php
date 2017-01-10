@@ -4,24 +4,11 @@ namespace Empg\HttpsPost;
 
 use Empg\HttpsPost\Response\MpiResponse;
 
-class MpiHttpsPost
+class MpiHttpsPost extends AbstractHttpsPost
 {
-    public $api_token;
-    public $store_id;
-    public $mpiRequest;
-    public $mpiResponse;
-
-    public function __construct($storeid, $apitoken, $mpiRequestOBJ)
+    public function getMpiResponse()
     {
-        $this->store_id = $storeid;
-        $this->api_token = $apitoken;
-        $this->mpiRequest = $mpiRequestOBJ;
-        $dataToSend = $this->toXML();
-
-        $url = $this->mpiRequest->getURL();
-
-        $httpsPost = new HttpsPost($url, $dataToSend);
-        $response = $httpsPost->getHttpsResponse();
+        $response = $this->getResponse();
 
         if (!$response) {
             $response = '<?xml version="1.0"?>'.
@@ -38,23 +25,17 @@ class MpiHttpsPost
                     '</MpiResponse>';
         }
 
-        $this->mpiResponse = new MpiResponse($response);
-    }
-
-    public function getMpiResponse()
-    {
-        return $this->mpiResponse;
+        return new MpiResponse($response);
     }
 
     public function toXML()
     {
-        $req = $this->mpiRequest;
-        $reqXMLString = $req->toXML();
+        $reqXMLString = $this->request->toXML();
 
         $xmlString = '<?xml version="1.0"?>'.
                     '<MpiRequest>'.
-                    "<store_id>$this->store_id</store_id>".
-                    "<api_token>$this->api_token</api_token>".
+                    "<store_id>{$this->storeId}</store_id>".
+                    "<api_token>{$this->apiToken}</api_token>".
                     $reqXMLString.
                     '</MpiRequest>';
 

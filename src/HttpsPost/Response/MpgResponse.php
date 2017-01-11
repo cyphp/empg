@@ -1167,6 +1167,12 @@ class MpgResponse
                 $this->ruleName = $data;
             }
             $this->rules[$this->ruleName][$this->currentTag] = $data;
+        } elseif ($this->currentTag == 'MpiACSUrl') {
+            if (!isset($this->responseData[$this->currentTag])) {
+                $this->responseData[$this->currentTag] = '';
+            }
+
+            $this->responseData[$this->currentTag] .= $data;
         } else {
             $this->responseData[$this->currentTag] = $data;
         }

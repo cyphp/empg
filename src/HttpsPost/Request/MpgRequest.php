@@ -213,12 +213,25 @@ class MpgRequest extends AbstractRequest
     {
         $txnType = $this->getTransactionType();
 
-        if ((strcmp($txnType, 'txn') === 0) || (strcmp($txnType, 'acs') === 0)) {
-            //$this->setIsMPI(true);
-            return true;
-        }
+        return $this->isMpiRequest();
+    }
 
-        return false;
+    public function isMpiTransaction()
+    {
+        $transactionType = $this->getTransactionType();
+
+        return $transactionType === 'txn' || $transactionType === 'acs';
+    }
+
+    public function isGroupTransaction()
+    {
+        $transactionType = $this->getTransactionType();
+
+        return $transactionType === 'group';
+    }
+
+    public function isRiskTransaction()
+    {
     }
 
     public function getTransactionType()
@@ -234,14 +247,10 @@ class MpgRequest extends AbstractRequest
             $this->setProcCountryCode('US');
         }
 
-        if ((strcmp($txnType, 'txn') === 0) || (strcmp($txnType, 'acs') === 0)) {
-            $this->isMPI = '_MPI';
-        } else {
-            $this->isMPI = '';
-        }
+        $fileType = $this->isMpiRequest() ? '_MPI' : '';
 
         $hostId = 'MONERIS'.$this->procCountryCode.$this->testMode.'_HOST';
-        $fileId = 'MONERIS'.$this->procCountryCode.$this->isMPI.'_FILE';
+        $fileId = 'MONERIS'.$this->procCountryCode.$fileType.'_FILE';
 
         $url = Globals::MONERIS_PROTOCOL.'://'.
             constant(Globals::class.'::'.$hostId).':'.
@@ -253,31 +262,36 @@ class MpgRequest extends AbstractRequest
 
     public function toXML()
     {
-        $tmpTxnArray = $this->txnArray;
-        $txnArrayLen = count($tmpTxnArray); //total number of transactions
-
-        for ($x = 0; $x < $txnArrayLen; ++$x) {
-            $txnObj = $tmpTxnArray[$x];
+        foreach ($this->txnArray as $txnObj) {
             $txn = $txnObj->getTransaction();
 
-            $txnType = array_shift($txn);
-            if (($this->procCountryCode === '_US') && (strpos($txnType, 'us_') !== 0)) {
-                if ((strcmp($txnType, 'txn') === 0) || (strcmp($txnType, 'acs') === 0) || (strcmp($txnType, 'group') === 0)) {
-                    //do nothing
-                } else {
-                    $txnType = 'us_'.$txnType;
-                }
+            $txnType = $txnObj->getTransactionType();
+
+            if ($this->procCountryCode === '_US'
+                && strpos($txnType, 'us_') !== 0
+                && !$txnObject->isMpiTransaction()
+                && !$txnObject->isGroupTransaction()
+            ) {
+                $txnType = 'us_'.$txnType;
             }
-            $tmpTxnTypes = $this->txnTypes;
-            $txnTypeArray = $tmpTxnTypes[$txnType];
+
+            $txnTypeArray = $this->txnTypes[$txnType];
             $txnTypeArrayLen = count($txnTypeArray); //length of a specific txn type
 
             $txnXMLString = '';
+            $dom = new \DomeDocument('1.0', 'UTF-8');
+            $doc = $dom;
 
             //for risk transactions only
-            if ((strcmp($txnType, 'attribute_query') === 0) || (strcmp($txnType, 'session_query') === 0)) {
+            if ($txnObj->isRiskTransaction()) {
                 $txnXMLString .= '<risk>';
+
+                $doc = $dom->createElement('risk');
+                $dom->appendChild($doc);
             }
+
+            $transactionNode = $dom->createElement($txnType);
+            $doc->appendChild($transactionNode);
 
             $txnXMLString .= "<$txnType>";
 
@@ -290,9 +304,18 @@ class MpgRequest extends AbstractRequest
                 }
             }
 
+            foreach ($this->txnTypes[$txnType] as $option) {
+                if (!isset($txn[$option])) {
+                    continue;
+                }
+
+                $transactionNode->appendChild($dom->createElement($option, $txn[$option]));
+            }
+
             $recur = $txnObj->getRecur();
             if ($recur != null) {
-                $txnXMLString .= $recur->toXML();
+                $xml = $recur->toXML();
+                $txnXMLString .= $xml;
             }
 
             $avs = $txnObj->getAvsInfo();

@@ -227,7 +227,7 @@ class MpgRequest extends AbstractRequest
             $this->setProcCountryCode('US');
         }
 
-        $fileType = $this->isMpiRequest() ? '_MPI' : '';
+        $fileType = $this->getIsMPI() ? '_MPI' : '';
 
         $hostId = 'MONERIS'.$this->procCountryCode.$this->testMode.'_HOST';
         $fileId = 'MONERIS'.$this->procCountryCode.$fileType.'_FILE';

@@ -211,27 +211,7 @@ class MpgRequest extends AbstractRequest
 
     public function getIsMPI()
     {
-        $txnType = $this->getTransactionType();
-
-        return $this->isMpiRequest();
-    }
-
-    public function isMpiTransaction()
-    {
-        $transactionType = $this->getTransactionType();
-
-        return $transactionType === 'txn' || $transactionType === 'acs';
-    }
-
-    public function isGroupTransaction()
-    {
-        $transactionType = $this->getTransactionType();
-
-        return $transactionType === 'group';
-    }
-
-    public function isRiskTransaction()
-    {
+        return $this->txnArray[0]->isMpiTransaction();
     }
 
     public function getTransactionType()
@@ -260,8 +240,10 @@ class MpgRequest extends AbstractRequest
         return $url;
     }
 
-    public function toXML()
+    public function toXML(bool $asDomDoc = false)
     {
+        $dom = new \DomDocument('1.0', 'UTF-8');
+
         foreach ($this->txnArray as $txnObj) {
             $txn = $txnObj->getTransaction();
 
@@ -275,34 +257,16 @@ class MpgRequest extends AbstractRequest
                 $txnType = 'us_'.$txnType;
             }
 
-            $txnTypeArray = $this->txnTypes[$txnType];
-            $txnTypeArrayLen = count($txnTypeArray); //length of a specific txn type
-
-            $txnXMLString = '';
-            $dom = new \DomeDocument('1.0', 'UTF-8');
             $doc = $dom;
 
             //for risk transactions only
             if ($txnObj->isRiskTransaction()) {
-                $txnXMLString .= '<risk>';
-
                 $doc = $dom->createElement('risk');
                 $dom->appendChild($doc);
             }
 
             $transactionNode = $dom->createElement($txnType);
             $doc->appendChild($transactionNode);
-
-            $txnXMLString .= "<$txnType>";
-
-            for ($i = 0; $i < $txnTypeArrayLen; ++$i) {
-                //Will only add to the XML if the tag was passed in by merchant
-                if (array_key_exists($txnTypeArray[$i], $txn)) {
-                    $txnXMLString .= "<$txnTypeArray[$i]>".//begin tag
-                        $txn[$txnTypeArray[$i]].// data
-                        "</$txnTypeArray[$i]>"; //end tag
-                }
-            }
 
             foreach ($this->txnTypes[$txnType] as $option) {
                 if (!isset($txn[$option])) {
@@ -315,59 +279,71 @@ class MpgRequest extends AbstractRequest
             $recur = $txnObj->getRecur();
             if ($recur != null) {
                 $xml = $recur->toXML();
-                $txnXMLString .= $xml;
+
+                $transactionNode->appendChild(DomDocument::loadXML($xml));
             }
 
             $avs = $txnObj->getAvsInfo();
             if ($avs != null) {
-                $txnXMLString .= $avs->toXML();
+                $xml = $avs->toXML();
+
+                $transactionNode->appendChild(DomDocument::loadXML($xml));
             }
 
             $cvd = $txnObj->getCvdInfo();
             if ($cvd != null) {
-                $txnXMLString .= $cvd->toXML();
+                $xml = $cvd->toXML();
+
+                $transactionNode->appendChild(DomDocument::loadXML($xml));
             }
 
             $custInfo = $txnObj->getCustInfo();
             if ($custInfo != null) {
-                $txnXMLString .= $custInfo->toXML();
+                $xml = $custInfo->toXML();
+
+                $transactionNode->appendChild(DomDocument::loadXML($xml));
             }
 
             $ach = $txnObj->getAchInfo();
             if ($ach != null) {
-                $txnXMLString .= $ach->toXML();
+                $xml = $ach->toXML();
+
+                $transactionNode->appendChild(DomDocument::loadXML($xml));
             }
 
             $convFee = $txnObj->getConvFeeInfo();
             if ($convFee != null) {
-                $txnXMLString .= $convFee->toXML();
+                $xml = $convFee->toXML();
+
+                $transactionNode->appendChild(DomDocument::loadXML($xml));
             }
 
             $sessionQuery = $txnObj->getSessionAccountInfo();
             if ($sessionQuery != null) {
-                $txnXMLString .= $sessionQuery->toXML();
+                $xml = $sessionQuery->toXML();
+
+                $transactionNode->appendChild(DomDocument::loadXML($xml));
             }
 
             $attributeQuery = $txnObj->getAttributeAccountInfo();
             if ($attributeQuery != null) {
-                $txnXMLString .= $attributeQuery->toXML();
+                $xml = $attributeQuery->toXML();
+
+                $transactionNode->appendChild(DomDocument::loadXML($xml));
             }
 
             $level23Data = $txnObj->getLevel23Data();
             if ($level23Data != null) {
-                $txnXMLString .= $level23Data->toXML();
+                $xml = $level23Data->toXML();
+
+                $transactionNode->appendChild(DomDocument::loadXML($xml));
             }
-
-            $txnXMLString .= "</$txnType>";
-
-            //for risk transactions only
-            if ((strcmp($txnType, 'attribute_query') === 0) || (strcmp($txnType, 'session_query') === 0)) {
-                $txnXMLString .= '</risk>';
-            }
-
-            $this->xmlString .= $txnXMLString;
         }
 
-        return $this->xmlString;
+        if ($asDomDoc) {
+            return $dom;
+        }
+
+        return trim(str_replace('<?xml version="1.0" encoding="UTF-8"?>', '', $dom->saveXML()));
     }
 }

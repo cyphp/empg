@@ -28,18 +28,20 @@ class MpgHttpsPost extends AbstractHttpsPost
 
     public function toXML()
     {
-        $reqXMLString = "<store_id>{$this->storeId}</store_id>".
-                        "<api_token>{$this->apiToken}</api_token>";
+        $dom = new \DomDocument('1.0', 'UTF-8');
+
+        $requestNode = $dom->createElement($this->request->getIsMPI() ? 'MpiRequest' : 'request');
+        $dom->appendChild($requestNode);
+
+        $requestNode->appendChild($dom->createElement('store_id', $this->storeId));
+        $requestNode->appendChild($dom->createElement('api_token', $this->apiToken));
 
         if ($this->appVersion) {
-            $reqXMLString .= "<app_version>{$this->appVersion}</app_version>";
+            $requestNode->appendChild($dom->createElement('app_version', $this->appVersion));
         }
 
-        $reqXMLString .= $this->request->toXML();
+        $requestNode->appendChild($dom->importNode($this->request->toXML(true)->documentElement, true));
 
-        $requestTag = $this->request->getIsMPI() ? 'MpiRequest' : 'request';
-
-        return '<?xml version="1.0" encoding="UTF-8"?>'.
-                "<{$requestTag}>".$reqXMLString."</{$requestTag}>";
+        return $dom->saveXML();
     }
 }

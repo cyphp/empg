@@ -11,8 +11,8 @@ class MpgRequestTest extends EmpgTestCase
             'type' => 'res_mpitxn',
             'expdate' => '1807',
             'data_key' => 'FAFGAFGHFAGHSFHGA',
-            'xid' => sprintf("%'920d", rand()),
-            'MD' => rand(77777, 999999),
+            'xid' => '99999999991902175641',
+            'MD' => '224530',
             'merchantUrl' => 'www.test.com',
             'accept' => true,
             'userAgent' => 'Mozilla',
@@ -20,6 +20,6 @@ class MpgRequestTest extends EmpgTestCase
 
         $request = new MpgRequest($transaction);
 
-        $this->assertEquals('', $request->toXML());
+        $this->assertEquals('<res_mpitxn><data_key>FAFGAFGHFAGHSFHGA</data_key><xid>99999999991902175641</xid><MD>224530</MD><merchantUrl>www.test.com</merchantUrl><accept>1</accept><userAgent>Mozilla</userAgent><expdate>1807</expdate></res_mpitxn>', $request->toXML());
     }
 }

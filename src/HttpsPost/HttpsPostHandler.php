@@ -3,6 +3,7 @@
 namespace Empg\HttpsPost;
 
 use Empg\Mpg\Globals;
+use GuzzleHttp\Psr7;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ConnectException;

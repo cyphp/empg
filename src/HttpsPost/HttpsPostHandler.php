@@ -3,6 +3,12 @@
 namespace Empg\HttpsPost;
 
 use Empg\Mpg\Globals;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\TooManyRedirectsException;
 
 class HttpsPostHandler
 {
@@ -23,25 +29,41 @@ class HttpsPostHandler
             echo "\n\nPostURL= ".$this->url;
         }
 
-        $clientTimeOut = Globals::CLIENT_TIMEOUT;
-        $apiVersion = Globals::API_VERSION;
+        $client = new Client([
+            'curl' => [
+                CURLOPT_USERAGENT => Globals::API_VERSION,
+            ],
+            'timeout' => Globals::CLIENT_TIMEOUT,
+        ]);
 
-        $ch = curl_init();
+        try {
+            $guzzleResponse = $client->post($url, [
+                'body' => $dataToSend,
+            ]);
 
-        curl_setopt($ch, CURLOPT_URL, $this->url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $this->dataToSend);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $clientTimeOut);
-        curl_setopt($ch, CURLOPT_USERAGENT, $apiVersion);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        //curl_setopt($ch, CURLOPT_CAINFO, "PATH_TO_CA_BUNDLE");
+            $this->response = (string) $guzzleResponse->getBody();
+        } catch (RequestException $e) {
+            echo Psr7\str($e->getRequest());
 
-        $this->response = curl_exec($ch);
+            if ($e->hasResponse()) {
+                echo Psr7\str($e->getResponse());
+            }
+        } catch (ConnectException $e) {
+            echo Psr7\str($e->getRequest());
 
-        curl_close($ch);
+            if ($e->hasResponse()) {
+                echo Psr7\str($e->getResponse());
+            }
+        } catch (ClientException $e) {
+            echo Psr7\str($e->getRequest());
+            echo Psr7\str($e->getResponse());
+        } catch (ServerException $e) {
+            echo Psr7\str($e->getRequest());
+            echo Psr7\str($e->getResponse());
+        } catch (TooManyRedirectsException $e) {
+            echo Psr7\str($e->getRequest());
+            echo Psr7\str($e->getResponse());
+        }
 
         if ($this->debug == true) {
             echo "\n\nRESPONSE= $this->response\n";

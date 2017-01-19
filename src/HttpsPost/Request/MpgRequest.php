@@ -348,11 +348,11 @@ class MpgRequest extends AbstractRequest implements XmlSerializable
         //     $transactionNode->appendChild(DomDocument::loadXML($xml));
         // }
 
-        // if ($transaction->isRiskTransaction()) {
-        //     $serialized = [
-        //         'risk' => $serialized,
-        //     ];
-        // }
+        if ($transaction->isRiskTransaction()) {
+            $serialized = [
+                'risk' => $serialized,
+            ];
+        }
 
         return [$serialized];
     }

@@ -2,9 +2,12 @@
 
 namespace Empg\HttpsPost\Request;
 
+use Sabre\Xml\XmlSerializable;
+use Sabre\Xml\Writer;
 use Empg\Mpg\Globals;
+use Empg\HttpsPost\Transaction\MpgTransaction;
 
-class MpgRequest extends AbstractRequest
+class MpgRequest extends AbstractRequest implements XmlSerializable
 {
     protected $txnTypes = [
         //Basic
@@ -240,110 +243,117 @@ class MpgRequest extends AbstractRequest
         return $url;
     }
 
-    public function toXML(bool $asDomDoc = false)
+    public function xmlSerialize(Writer $writer)
     {
-        $dom = new \DomDocument('1.0', 'UTF-8');
+        $iterator = $this->getTransactionIterator();
 
-        foreach ($this->txnArray as $txnObj) {
-            $txn = $txnObj->getTransaction();
+        $serialized = [];
 
-            $txnType = $txnObj->getTransactionType();
+        while ($iterator->valid()) {
+            $transaction = $iterator->current();
 
-            if ($this->procCountryCode === '_US'
-                && strpos($txnType, 'us_') !== 0
-                && !$txnObject->isMpiTransaction()
-                && !$txnObject->isGroupTransaction()
-            ) {
-                $txnType = 'us_'.$txnType;
-            }
+            $serialized[] = $this->xmlSerializeTransaction($transaction);
 
-            $doc = $dom;
-
-            //for risk transactions only
-            if ($txnObj->isRiskTransaction()) {
-                $doc = $dom->createElement('risk');
-                $dom->appendChild($doc);
-            }
-
-            $transactionNode = $dom->createElement($txnType);
-            $doc->appendChild($transactionNode);
-
-            foreach ($this->txnTypes[$txnType] as $option) {
-                if (!isset($txn[$option])) {
-                    continue;
-                }
-
-                $transactionNode->appendChild($dom->createElement($option, $txn[$option]));
-            }
-
-            $recur = $txnObj->getRecur();
-            if ($recur != null) {
-                $xml = $recur->toXML();
-
-                $transactionNode->appendChild(DomDocument::loadXML($xml));
-            }
-
-            $avs = $txnObj->getAvsInfo();
-            if ($avs != null) {
-                $xml = $avs->toXML();
-
-                $transactionNode->appendChild(DomDocument::loadXML($xml));
-            }
-
-            $cvd = $txnObj->getCvdInfo();
-            if ($cvd != null) {
-                $xml = $cvd->toXML();
-
-                $transactionNode->appendChild(DomDocument::loadXML($xml));
-            }
-
-            $custInfo = $txnObj->getCustInfo();
-            if ($custInfo != null) {
-                $xml = $custInfo->toXML();
-
-                $transactionNode->appendChild(DomDocument::loadXML($xml));
-            }
-
-            $ach = $txnObj->getAchInfo();
-            if ($ach != null) {
-                $xml = $ach->toXML();
-
-                $transactionNode->appendChild(DomDocument::loadXML($xml));
-            }
-
-            $convFee = $txnObj->getConvFeeInfo();
-            if ($convFee != null) {
-                $xml = $convFee->toXML();
-
-                $transactionNode->appendChild(DomDocument::loadXML($xml));
-            }
-
-            $sessionQuery = $txnObj->getSessionAccountInfo();
-            if ($sessionQuery != null) {
-                $xml = $sessionQuery->toXML();
-
-                $transactionNode->appendChild(DomDocument::loadXML($xml));
-            }
-
-            $attributeQuery = $txnObj->getAttributeAccountInfo();
-            if ($attributeQuery != null) {
-                $xml = $attributeQuery->toXML();
-
-                $transactionNode->appendChild(DomDocument::loadXML($xml));
-            }
-
-            $level23Data = $txnObj->getLevel23Data();
-            if ($level23Data != null) {
-                $xml = $level23Data->toXML();
-
-                $transactionNode->appendChild(DomDocument::loadXML($xml));
-            }
+            $iterator->next();
         }
 
-        if ($asDomDoc) {
-            return $dom;
+        $writer->write($serialized);
+    }
+
+    protected function xmlSerializeTransaction(MpgTransaction $transaction)
+    {
+        $serialized = [];
+        $type = $transaction->getTransactionType();
+
+        if ($this->procCountryCode === '_US'
+            && strpos($type, 'us_') !== 0
+            && !$transaction->isMpiTransaction()
+            && !$transaction->isGroupTransaction()
+        ) {
+            $type = 'us_'.$type;
         }
 
-        return trim(str_replace('<?xml version="1.0" encoding="UTF-8"?>', '', $dom->saveXML()));
+        $serialized[$type] = [];
+
+        foreach ($this->txnTypes[$type] as $option) {
+            if (!$transaction->hasOption($option)) {
+                continue;
+            }
+
+            $serialized[$type][$option] = $transaction->getOption($option);
+        }
+
+        // add-ons not implemented yet
+        //
+        // $recur = $txnObj->getRecur();
+        // if ($recur != null) {
+        //     $xml = $recur->toXML();
+
+        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
+        // }
+
+        // $avs = $txnObj->getAvsInfo();
+        // if ($avs != null) {
+        //     $xml = $avs->toXML();
+
+        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
+        // }
+
+        // $cvd = $txnObj->getCvdInfo();
+        // if ($cvd != null) {
+        //     $xml = $cvd->toXML();
+
+        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
+        // }
+
+        // $custInfo = $txnObj->getCustInfo();
+        // if ($custInfo != null) {
+        //     $xml = $custInfo->toXML();
+
+        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
+        // }
+
+        // $ach = $txnObj->getAchInfo();
+        // if ($ach != null) {
+        //     $xml = $ach->toXML();
+
+        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
+        // }
+
+        // $convFee = $txnObj->getConvFeeInfo();
+        // if ($convFee != null) {
+        //     $xml = $convFee->toXML();
+
+        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
+        // }
+
+        // $sessionQuery = $txnObj->getSessionAccountInfo();
+        // if ($sessionQuery != null) {
+        //     $xml = $sessionQuery->toXML();
+
+        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
+        // }
+
+        // $attributeQuery = $txnObj->getAttributeAccountInfo();
+        // if ($attributeQuery != null) {
+        //     $xml = $attributeQuery->toXML();
+
+        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
+        // }
+
+        // $level23Data = $txnObj->getLevel23Data();
+        // if ($level23Data != null) {
+        //     $xml = $level23Data->toXML();
+
+        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
+        // }
+
+        // if ($transaction->isRiskTransaction()) {
+        //     $serialized = [
+        //         'risk' => $serialized,
+        //     ];
+        // }
+
+        return [$serialized];
     }
 }

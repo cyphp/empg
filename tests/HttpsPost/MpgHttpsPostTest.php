@@ -1,12 +1,13 @@
 <?php
 
+use Sabre\Xml\Writer;
 use Empg\HttpsPost\Request\MpgRequest;
 use Empg\HttpsPost\Transaction\MpgTransaction;
 use Empg\HttpsPost\MpgHttpsPost;
 
 class MpgHttpsPostTest extends EmpgTestCase
 {
-    public function testToXML()
+    public function testXmlSerialize()
     {
         $transaction = new MpgTransaction([
             'type' => 'res_mpitxn',
@@ -23,6 +24,12 @@ class MpgHttpsPostTest extends EmpgTestCase
 
         $httpsPost = new MpgHttpsPost('store1', 'token1', $request);
 
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><request><store_id>store1</store_id><api_token>token1</api_token><res_mpitxn><data_key>FAFGAFGHFAGHSFHGA</data_key><xid>99999999991902175641</xid><MD>224530</MD><merchantUrl>www.test.com</merchantUrl><accept>1</accept><userAgent>Mozilla</userAgent><expdate>1807</expdate></res_mpitxn></request>', str_replace(["\n", "\r"], '', $httpsPost->toXML()));
+        $writer = new Writer();
+        $writer->openMemory();
+        $writer->setIndent(false);
+        $writer->startDocument('1.0', 'UTF-8');
+        $writer->write($httpsPost);
+
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><request><store_id>store1</store_id><api_token>token1</api_token><res_mpitxn><data_key>FAFGAFGHFAGHSFHGA</data_key><xid>99999999991902175641</xid><MD>224530</MD><merchantUrl>www.test.com</merchantUrl><accept>1</accept><userAgent>Mozilla</userAgent><expdate>1807</expdate></res_mpitxn></request>', str_replace(["\n", "\r"], '', $writer->outputMemory()));
     }
 }

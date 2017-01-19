@@ -7,6 +7,7 @@ use Empg\HttpsPost\Transaction\AbstractTransaction;
 abstract class AbstractRequest
 {
     protected $txnArray;
+    protected $transactions;
     protected $procCountryCode = '';
     protected $testMode = '';
 
@@ -17,6 +18,12 @@ abstract class AbstractRequest
         }
 
         $this->txnArray = $txn;
+        $this->transactions = new \ArrayObject($txn);
+    }
+
+    public function getTransactionIterator()
+    {
+        return $this->transactions->getIterator();
     }
 
     public function setProcCountryCode($countryCode)

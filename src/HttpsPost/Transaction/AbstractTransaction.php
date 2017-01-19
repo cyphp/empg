@@ -25,6 +25,20 @@ abstract class AbstractTransaction
         throw new \Exception('Missing transaction type');
     }
 
+    public function hasOption(string $key)
+    {
+        return isset($this->txn[$key]);
+    }
+
+    public function getOption(string $key)
+    {
+        if ($this->hasOption($key)) {
+            return $this->txn[$key];
+        }
+
+        return;
+    }
+
     public function isMpiTransaction()
     {
         $transactionType = $this->getTransactionType();

@@ -2,9 +2,11 @@
 
 namespace Empg\HttpsPost;
 
+use Sabre\Xml\XmlSerializable;
+use Sabre\Xml\Writer;
 use Empg\HttpsPost\Response\MpgResponse;
 
-class MpgHttpsPost extends AbstractHttpsPost
+class MpgHttpsPost extends AbstractHttpsPost implements XmlSerializable
 {
     public function getMpgResponse()
     {
@@ -26,22 +28,21 @@ class MpgHttpsPost extends AbstractHttpsPost
         return new MpgResponse($response);
     }
 
-    public function toXML()
+    public function xmlSerialize(Writer $writer)
     {
-        $dom = new \DomDocument('1.0', 'UTF-8');
+        $serialized = [];
+        $type = $this->request->getIsMPI() ? 'MpiRequest' : 'request';
 
-        $requestNode = $dom->createElement($this->request->getIsMPI() ? 'MpiRequest' : 'request');
-        $dom->appendChild($requestNode);
-
-        $requestNode->appendChild($dom->createElement('store_id', $this->storeId));
-        $requestNode->appendChild($dom->createElement('api_token', $this->apiToken));
+        $serialized[$type] = [
+            'store_id' => $this->storeId,
+            'api_token' => $this->apiToken,
+            $this->request
+        ];
 
         if ($this->appVersion) {
-            $requestNode->appendChild($dom->createElement('app_version', $this->appVersion));
+            $serialized[$type]['app_version'] = $this->appVersion;
         }
 
-        $requestNode->appendChild($dom->importNode($this->request->toXML(true)->documentElement, true));
-
-        return $dom->saveXML();
+        $writer->write($serialized);
     }
 }

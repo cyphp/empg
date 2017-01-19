@@ -2,6 +2,7 @@
 
 namespace Empg\HttpsPost;
 
+use Sabre\Xml\Writer;
 use Empg\HttpsPost\Request\AbstractRequest;
 
 abstract class AbstractHttpsPost
@@ -31,7 +32,14 @@ abstract class AbstractHttpsPost
 
     public function execute()
     {
-        $handler = new HttpsPostHandler($this->request->getURL(), $this->toXML());
+        // build xml request
+        $writer = new Writer();
+        $writer->openMemory();
+        $writer->setIndent(false);
+        $writer->startDocument('1.0', 'UTF-8');
+        $writer->write($this);
+
+        $handler = new HttpsPostHandler($this->request->getURL(), $writer->outputMemory());
         $this->response = $handler->getHttpsResponse();
 
         return $this;

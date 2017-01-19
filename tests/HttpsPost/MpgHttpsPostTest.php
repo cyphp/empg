@@ -24,12 +24,8 @@ class MpgHttpsPostTest extends EmpgTestCase
 
         $httpsPost = new MpgHttpsPost('store1', 'token1', $request);
 
-        $writer = new Writer();
-        $writer->openMemory();
-        $writer->setIndent(false);
-        $writer->startDocument('1.0', 'UTF-8');
-        $writer->write($httpsPost);
+        $this->sabreWriter->write($httpsPost);
 
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><request><store_id>store1</store_id><api_token>token1</api_token><res_mpitxn><data_key>FAFGAFGHFAGHSFHGA</data_key><xid>99999999991902175641</xid><MD>224530</MD><merchantUrl>www.test.com</merchantUrl><accept>1</accept><userAgent>Mozilla</userAgent><expdate>1807</expdate></res_mpitxn></request>', str_replace(["\n", "\r"], '', $writer->outputMemory()));
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><request><store_id>store1</store_id><api_token>token1</api_token><res_mpitxn><data_key>FAFGAFGHFAGHSFHGA</data_key><xid>99999999991902175641</xid><MD>224530</MD><merchantUrl>www.test.com</merchantUrl><accept>1</accept><userAgent>Mozilla</userAgent><expdate>1807</expdate></res_mpitxn></request>', str_replace(["\n", "\r"], '', $this->sabreWriter->outputMemory()));
     }
 }

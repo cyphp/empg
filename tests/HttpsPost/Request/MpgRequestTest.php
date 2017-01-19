@@ -20,6 +20,8 @@ class MpgRequestTest extends EmpgTestCase
 
         $request = new MpgRequest($transaction);
 
-        $this->assertEquals('<res_mpitxn><data_key>FAFGAFGHFAGHSFHGA</data_key><xid>99999999991902175641</xid><MD>224530</MD><merchantUrl>www.test.com</merchantUrl><accept>1</accept><userAgent>Mozilla</userAgent><expdate>1807</expdate></res_mpitxn>', $request->toXML());
+        $this->sabreWriter->write($request);
+
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><res_mpitxn><data_key>FAFGAFGHFAGHSFHGA</data_key><xid>99999999991902175641</xid><MD>224530</MD><merchantUrl>www.test.com</merchantUrl><accept>1</accept><userAgent>Mozilla</userAgent><expdate>1807</expdate></res_mpitxn>', str_replace(["\n", "\r"], '', $this->sabreWriter->outputMemory()));
     }
 }

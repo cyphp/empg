@@ -284,13 +284,11 @@ class MpgRequest extends AbstractRequest implements XmlSerializable
         }
 
         // add-ons not implemented yet
-        //
-        // $recur = $txnObj->getRecur();
-        // if ($recur != null) {
-        //     $xml = $recur->toXML();
 
-        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
-        // }
+        $recur = $transaction->getRecur();
+        if ($recur = $transaction->getRecur()) {
+            $serialized[$type][] = $recur;
+        }
 
         // $avs = $txnObj->getAvsInfo();
         // if ($avs != null) {

@@ -2,10 +2,13 @@
 
 namespace Empg\Mpg;
 
-class MpgRecur
+use Sabre\Xml\Writer;
+use Sabre\Xml\XmlSerializable;
+
+class MpgRecur implements XmlSerializable
 {
     public $params;
-    public $recurTemplate = array('recur_unit', 'start_now', 'start_date', 'num_recurs', 'period', 'recur_amount');
+    public $recurTemplate = ['recur_unit', 'start_now', 'start_date', 'num_recurs', 'period', 'recur_amount'];
 
     public function __construct($params)
     {
@@ -15,14 +18,10 @@ class MpgRecur
         }
     }
 
-    public function toXML()
+    public function xmlSerialize(Writer $writer)
     {
-        $xmlString = '';
-
-        foreach ($this->recurTemplate as $tag) {
-            $xmlString .= "<$tag>".$this->params[$tag]."</$tag>";
-        }
-
-        return "<recur>$xmlString</recur>";
+        $writer->write([
+            'recur' => $this->params,
+        ]);
     }
-}//end class
+}

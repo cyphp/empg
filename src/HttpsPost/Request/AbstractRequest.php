@@ -41,6 +41,4 @@ abstract class AbstractRequest
     }
 
     abstract public function getURL();
-
-    abstract public function toXML();
 }

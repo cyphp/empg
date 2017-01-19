@@ -53,6 +53,4 @@ abstract class AbstractHttpsPost
 
         return $this->response;
     }
-
-    abstract public function toXML();
 }

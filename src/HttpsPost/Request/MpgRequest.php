@@ -284,62 +284,39 @@ class MpgRequest extends AbstractRequest implements XmlSerializable
         }
 
         // add-ons not implemented yet
-
-        $recur = $transaction->getRecur();
         if ($recur = $transaction->getRecur()) {
             $serialized[$type][] = $recur;
         }
 
-        // $avs = $txnObj->getAvsInfo();
-        // if ($avs != null) {
-        //     $xml = $avs->toXML();
+        if ($avs = $transaction->getAvsInfo()) {
+            $serialized[$type][] = $avs;
+        }
 
-        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
+        if ($cvd = $transaction->getCvdInfo()) {
+            $serialized[$type][] = $cvd;
+        }
+
+        // if ($custInfo = $transaction->getCustInfo()) {
+        //     $serialized[$type][] = $custInfo;
         // }
 
-        // $cvd = $txnObj->getCvdInfo();
-        // if ($cvd != null) {
-        //     $xml = $cvd->toXML();
+        if ($ach = $transaction->getAchInfo()) {
+            $serialized[$type][] = $ach;
+        }
 
-        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
-        // }
+        if ($convFee = $transaction->getConvFeeInfo()) {
+            $serialized[$type][] = $convFee;
+        }
 
-        // $custInfo = $txnObj->getCustInfo();
-        // if ($custInfo != null) {
-        //     $xml = $custInfo->toXML();
+        if ($sessionQuery = $transaction->getSessionAccountInfo()) {
+            $serialized[$type][] = $sessionQuery;
+        }
 
-        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
-        // }
+        if ($attributeQuery = $transaction->getAttributeAccountInfo()) {
+            $serialized[$type][] = $attributeQuery;
+        }
 
-        // $ach = $txnObj->getAchInfo();
-        // if ($ach != null) {
-        //     $xml = $ach->toXML();
-
-        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
-        // }
-
-        // $convFee = $txnObj->getConvFeeInfo();
-        // if ($convFee != null) {
-        //     $xml = $convFee->toXML();
-
-        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
-        // }
-
-        // $sessionQuery = $txnObj->getSessionAccountInfo();
-        // if ($sessionQuery != null) {
-        //     $xml = $sessionQuery->toXML();
-
-        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
-        // }
-
-        // $attributeQuery = $txnObj->getAttributeAccountInfo();
-        // if ($attributeQuery != null) {
-        //     $xml = $attributeQuery->toXML();
-
-        //     $transactionNode->appendChild(DomDocument::loadXML($xml));
-        // }
-
-        // $level23Data = $txnObj->getLevel23Data();
+        // $level23Data = $transaction->getLevel23Data();
         // if ($level23Data != null) {
         //     $xml = $level23Data->toXML();
 

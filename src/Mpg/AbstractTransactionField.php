@@ -9,6 +9,7 @@ abstract class AbstractTransactionField implements XmlSerializable
 {
     protected $fieldName = null;
     protected $params;
+    protected $format;
 
     public function __construct($params)
     {

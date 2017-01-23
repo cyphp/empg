@@ -15,5 +15,6 @@ class EmpgTestCase extends PHPUnit_Framework_TestCase
         $this->sabreWriter->openMemory();
         $this->sabreWriter->setIndent(false);
         $this->sabreWriter->startDocument('1.0', 'UTF-8');
+        $this->sabreWriter->namespaceMap['http://www.w3.org/1999/xhtml'] = '';
     }
 }

@@ -1,6 +1,5 @@
 <?php
 
-use Sabre\Xml\Writer;
 use Empg\HttpsPost\Request\MpgRequest;
 use Empg\HttpsPost\Transaction\MpgTransaction;
 use Empg\HttpsPost\MpgHttpsPost;
@@ -26,6 +25,6 @@ class MpgHttpsPostTest extends EmpgTestCase
 
         $this->sabreWriter->write($httpsPost);
 
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><request><store_id>store1</store_id><api_token>token1</api_token><res_mpitxn><data_key>FAFGAFGHFAGHSFHGA</data_key><xid>99999999991902175641</xid><MD>224530</MD><merchantUrl>www.test.com</merchantUrl><accept>1</accept><userAgent>Mozilla</userAgent><expdate>1807</expdate></res_mpitxn></request>', str_replace(["\n", "\r"], '', $this->sabreWriter->outputMemory()));
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><request xmlns="http://www.w3.org/1999/xhtml"><store_id>store1</store_id><api_token>token1</api_token><res_mpitxn><data_key>FAFGAFGHFAGHSFHGA</data_key><xid>99999999991902175641</xid><MD>224530</MD><merchantUrl>www.test.com</merchantUrl><accept>1</accept><userAgent>Mozilla</userAgent><expdate>1807</expdate></res_mpitxn></request>', str_replace(["\n", "\r"], '', $this->sabreWriter->outputMemory()));
     }
 }

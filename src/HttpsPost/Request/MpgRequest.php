@@ -296,9 +296,9 @@ class MpgRequest extends AbstractRequest implements XmlSerializable
             $serialized[$type][] = $cvd;
         }
 
-        // if ($custInfo = $transaction->getCustInfo()) {
-        //     $serialized[$type][] = $custInfo;
-        // }
+        if ($custInfo = $transaction->getCustInfo()) {
+            $serialized[$type][] = $custInfo;
+        }
 
         if ($ach = $transaction->getAchInfo()) {
             $serialized[$type][] = $ach;

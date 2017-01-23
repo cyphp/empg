@@ -73,7 +73,6 @@ class MpgCustInfo implements XmlSerializable
 
     public function toXML()
     {
-        dump($this->level3data);
         $xmlString = $this->toXML_low($this->level3template, 'cust_info');
 
         return $xmlString;
@@ -81,55 +80,24 @@ class MpgCustInfo implements XmlSerializable
 
     public function xmlSerialize(Writer $writer)
     {
+        $customer = [];
         $customer = current($this->level3data['cust_info']);
 
-        $customer['billing'] = $this->level3data['billing'];
-        $customer['shipping'] = $this->level3data['shipping'];
-        
+        $customer['billing'] = current($this->level3data['billing']);
+        $customer['shipping'] = current($this->level3data['shipping']);
+
         foreach ($this->level3data['item'] as $index => $item) {
             $customer[] = [
-                'item' => json_decode(json_encode($item), true),
+                'item' => [
+                    // name is a reserved sabre/xml keyword if used without namespace
+                    '{http://www.w3.org/1999/xhtml}name' => $item['name'],
+                    'quantity' => $item['quantity'],
+                    'product_code' => $item['product_code'],
+                    'extended_amount' => $item['extended_amount'],
+                ],
             ];
         }
 
         $writer->write([$this->fieldName => $customer]);
     }
-
-    // public function toXML_low($template, $txnType)
-    // {
-    //     $xmlString = '';
-    //     for ($x = 0; $x < count($this->level3data[$txnType]); ++$x) {
-    //         if ($x > 0) {
-    //             $xmlString .= "</$txnType><$txnType>";
-    //         }
-
-    //         $keys = array_keys($template);
-
-    //         // for ($i = 0; $i < count($keys); ++$i) {
-    //         foreach ($keys as $i => $tag) {
-    //             // dump('inner foreach '.$i.' '.$tag);
-    //             if (is_array($template[$tag])) {
-    //                 $data = $template[$tag];
-
-    //                 if (!count($this->level3data[$tag])) {
-    //                     continue;
-    //                 }
-    //                 // dump("is_array: ".$tag);
-
-    //                 $xmlString .="<$tag>";
-    //                 $xmlString .= $this->toXML_low($data, $tag);
-    //                 $xmlString .= "</$tag>";
-    //             } else {
-    //                 $tag = $template[$keys[$i]];
-    //                 // dump("not is array: ".$tag);
-    //                 $beginTag = "<$tag>";
-    //                 $endTag = "</$tag>";
-    //                 $data = $this->level3data[$txnType][$x][$tag];
-    //                 $xmlString .= $beginTag.$data.$endTag;
-    //             }
-    //         }//end inner for
-    //     }//end outer for
-
-    //     return $xmlString;
-    // }
 }

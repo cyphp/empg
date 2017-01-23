@@ -34,9 +34,12 @@ abstract class AbstractHttpsPost
     {
         // build xml request
         $writer = new Writer();
+        $writer->namespaceMap['http://www.w3.org/1999/xhtml'] = '';
+
         $writer->openMemory();
         $writer->setIndent(false);
         $writer->startDocument('1.0', 'UTF-8');
+
         $writer->write($this);
 
         $handler = new HttpsPostHandler($this->request->getURL(), $writer->outputMemory());

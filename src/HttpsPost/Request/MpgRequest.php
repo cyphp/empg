@@ -4,7 +4,6 @@ namespace Empg\HttpsPost\Request;
 
 use Sabre\Xml\XmlSerializable;
 use Sabre\Xml\Writer;
-use Empg\Mpg\Globals;
 use Empg\HttpsPost\Transaction\MpgTransaction;
 
 class MpgRequest extends AbstractRequest implements XmlSerializable
@@ -220,27 +219,6 @@ class MpgRequest extends AbstractRequest implements XmlSerializable
     public function getTransactionType()
     {
         return $this->txnArray[0]->getTransactionType();
-    }
-
-    public function getURL()
-    {
-        $txnType = $this->getTransactionType();
-
-        if (strpos($txnType, 'us_') !== false) {
-            $this->setProcCountryCode('US');
-        }
-
-        $fileType = $this->getIsMPI() ? '_MPI' : '';
-
-        $hostId = 'MONERIS'.$this->procCountryCode.$this->testMode.'_HOST';
-        $fileId = 'MONERIS'.$this->procCountryCode.$fileType.'_FILE';
-
-        $url = Globals::MONERIS_PROTOCOL.'://'.
-            constant(Globals::class.'::'.$hostId).':'.
-            Globals::MONERIS_PORT.
-            constant(Globals::class.'::'.$fileId);
-
-        return $url;
     }
 
     public function xmlSerialize(Writer $writer)

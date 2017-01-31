@@ -2,7 +2,6 @@
 
 namespace Empg\HttpsPost\Request;
 
-use Empg\Mpg\Globals;
 use Empg\HttpsPost\Transaction\AbstractTransaction;
 
 abstract class AbstractRequest

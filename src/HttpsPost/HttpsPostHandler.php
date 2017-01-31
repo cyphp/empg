@@ -2,7 +2,7 @@
 
 namespace Empg\HttpsPost;
 
-use Empg\Mpg\Globals;
+use Empg\Configuration;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -14,16 +14,23 @@ use GuzzleHttp\Exception\TooManyRedirectsException;
 class HttpsPostHandler
 {
     protected $url;
+    protected $config;
     protected $dataToSend;
     protected $clientTimeOut;
     protected $apiVersion;
     protected $response;
     protected $debug = false; //default is false for production release
 
-    public function __construct($url, $dataToSend)
+    public function __construct(Configuration $config, $url, $dataToSend)
     {
+        $this->config = $config;
         $this->url = $url;
         $this->dataToSend = $dataToSend;
+    }
+
+    public function execute()
+    {
+        $settings = $this->config->getSettings();
 
         if ($this->debug == true) {
             echo 'DataToSend= '.$this->dataToSend;
@@ -32,9 +39,9 @@ class HttpsPostHandler
 
         $client = new Client([
             'curl' => [
-                CURLOPT_USERAGENT => Globals::API_VERSION,
+                CURLOPT_USERAGENT => $settings['moneris']['version'],
             ],
-            'timeout' => Globals::CLIENT_TIMEOUT,
+            'timeout' => $settings['moneris']['timeout'],
         ]);
 
         try {

@@ -41,8 +41,8 @@ abstract class AbstractHttpsPost
 
         $writer->write($this);
 
-        $handler = new HttpsPostHandler($this->getRequestUrl(), $writer->outputMemory());
-        $this->response = $handler->getHttpsResponse();
+        $handler = new HttpsPostHandler($this->config, $this->getRequestUrl(), $writer->outputMemory());
+        $this->response = $handler->execute()->getHttpsResponse();
 
         return $this;
     }

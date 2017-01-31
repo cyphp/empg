@@ -9,7 +9,9 @@ class MpgHttpsPostTest extends EmpgTestCase
 {
     public function testXmlSerialize()
     {
-        $config = new Configuration('store1', 'token1');
+        $config = new Configuration('store1', 'token1', [
+            'env' => Configuration::ENV_TEST,
+        ]);
 
         $transaction = new MpgTransaction([
             'type' => 'res_mpitxn',

@@ -21,7 +21,7 @@ class Configuration
         $this->storeId = $storeId;
         $this->options = $options;
 
-        $this->settings = Yaml::parse(file_get_contents(__DIR__.'/../config/'.$this->env.'.yml'));
+        $this->settings = Yaml::parse(file_get_contents(__DIR__.'/../config/'.$this->options['env'].'.yml'));
     }
 
     public function isDebugging()

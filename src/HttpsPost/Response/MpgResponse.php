@@ -4,50 +4,50 @@ namespace Empg\HttpsPost\Response;
 
 class MpgResponse
 {
-    public $responseData;
+    protected $responseData;
 
-    public $p; //parser
+    protected $p; //parser
 
-    public $currentTag;
-    public $purchaseHash = [];
-    public $refundHash;
-    public $correctionHash = [];
-    public $isBatchTotals;
-    public $term_id;
-    public $receiptHash = [];
-    public $ecrHash = [];
-    public $CardType;
-    public $currentTxnType;
-    public $ecrs = [];
-    public $cards = [];
-    public $cardHash = [];
+    protected $currentTag;
+    protected $purchaseHash = [];
+    protected $refundHash;
+    protected $correctionHash = [];
+    protected $isBatchTotals;
+    protected $term_id;
+    protected $receiptHash = [];
+    protected $ecrHash = [];
+    protected $CardType;
+    protected $currentTxnType;
+    protected $ecrs = [];
+    protected $cards = [];
+    protected $cardHash = [];
 
     //specifically for Resolver transactions
-    public $resolveData;
-    public $resolveDataHash;
-    public $data_key = '';
-    public $DataKeys = [];
-    public $isResolveData;
+    protected $resolveData;
+    protected $resolveDataHash;
+    protected $data_key = '';
+    protected $DataKeys = [];
+    protected $isResolveData;
 
     //specifically for VdotMe transactions
-    public $vDotMeInfo;
-    public $isVdotMeInfo;
+    protected $vDotMeInfo;
+    protected $isVdotMeInfo;
 
     //specifically for MasterPass transactions
-    public $isPaypass;
-    public $isPaypassInfo;
-    public $masterPassData = [];
+    protected $isPaypass;
+    protected $isPaypassInfo;
+    protected $masterPassData = [];
 
     //specifically for MPI transactions
-    public $ACSUrl;
-    public $isMPI = false;
+    protected $ACSUrl;
+    protected $isMPI = false;
 
     //specifically for Risk transactions
-    public $isResults;
-    public $isRule;
-    public $ruleName;
-    public $results = [];
-    public $rules = [];
+    protected $isResults;
+    protected $isRule;
+    protected $ruleName;
+    protected $results = [];
+    protected $rules = [];
 
     public function __construct($xmlString)
     {

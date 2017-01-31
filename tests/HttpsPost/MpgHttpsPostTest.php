@@ -3,11 +3,14 @@
 use Empg\HttpsPost\Request\MpgRequest;
 use Empg\HttpsPost\Transaction\MpgTransaction;
 use Empg\HttpsPost\MpgHttpsPost;
+use Empg\Configuration;
 
 class MpgHttpsPostTest extends EmpgTestCase
 {
     public function testXmlSerialize()
     {
+        $config = new Configuration('store1', 'token1');
+
         $transaction = new MpgTransaction([
             'type' => 'res_mpitxn',
             'expdate' => '1807',
@@ -21,7 +24,7 @@ class MpgHttpsPostTest extends EmpgTestCase
 
         $request = new MpgRequest($transaction);
 
-        $httpsPost = new MpgHttpsPost('store1', 'token1', $request);
+        $httpsPost = new MpgHttpsPost($config, $request);
 
         $this->sabreWriter->write($httpsPost);
 

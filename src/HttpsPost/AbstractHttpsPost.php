@@ -3,21 +3,20 @@
 namespace Empg\HttpsPost;
 
 use Sabre\Xml\Writer;
+use Empg\Configuration;
 use Empg\HttpsPost\Request\AbstractRequest;
 
 abstract class AbstractHttpsPost
 {
-    protected $apiToken;
-    protected $storeId;
+    protected $config;
     protected $appVersion;
 
     protected $request;
     protected $response;
 
-    public function __construct($storeId, $apiToken, AbstractRequest $request)
+    public function __construct(Configuration $config, AbstractRequest $request)
     {
-        $this->apiToken = $apiToken;
-        $this->storeId = $storeId;
+        $this->config = $config;
         $this->request = $request;
 
         $this->setAppVersion();
@@ -42,7 +41,7 @@ abstract class AbstractHttpsPost
 
         $writer->write($this);
 
-        $handler = new HttpsPostHandler($this->request->getURL(), $writer->outputMemory());
+        $handler = new HttpsPostHandler($this->getRequestUrl(), $writer->outputMemory());
         $this->response = $handler->getHttpsResponse();
 
         return $this;
@@ -55,5 +54,20 @@ abstract class AbstractHttpsPost
         }
 
         return $this->response;
+    }
+
+    protected function getRequestUrl()
+    {
+        $settings = $this->config->getSettings();
+        $isReqOfUSService = $this->request->isRequestOfUSService();
+        $isMpiFile = $this->request->getIsMPI();
+
+        $host = $settings['moneris']['host'][$isReqOfUSService ? 'us' : 'default'];
+        $file = $isMpiFile ? $settings['moneris']['mpi'] : $settings['moneris']['file'];
+        $file = $isReqOfUSService ? $file['us'] : $file['default'];
+
+        $url = $settings['moneris']['protocol'].'://'.$host.':'.$settings['moneris']['port'].$file;
+
+        return $url;
     }
 }

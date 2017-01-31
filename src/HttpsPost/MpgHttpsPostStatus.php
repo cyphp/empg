@@ -4,8 +4,8 @@ namespace Empg\HttpsPost;
 
 class MpgHttpsPostStatus extends MpgHttpsPost
 {
-    public $status;
-    public $xmlString;
+    protected $status;
+    protected $xmlString;
 
     public function setStatus($status)
     {

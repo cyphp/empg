@@ -1,0 +1,22 @@
+# settings
+
+moneris:
+  protocol: 'https'
+
+  host: 
+    default: 'www3.moneris.com'
+    us: 'esplus.moneris.com'
+
+  port: 443
+
+  file:
+    default: '/gateway2/servlet/MpgRequest'
+    us: '/gateway_us/servlet/MpgRequest'
+
+  mpi:
+    default: '/mpi/servlet/MpiServlet'
+    us: '/mpi/servlet/MpiServlet'
+
+  version: 'PHP NA - 1.0.5'
+
+  timeout: 30

@@ -4,15 +4,15 @@ namespace Empg\HttpsPost\Transaction;
 
 class MpgTransaction extends AbstractTransaction
 {
-    public $custInfo = null;
-    public $recur = null;
-    public $cvd = null;
-    public $avs = null;
-    public $convFee = null;
-    public $ach = null;
-    public $sessionAccountInfo = null;
-    public $attributeAccountInfo = null;
-    public $level23Data = null;
+    protected $custInfo = null;
+    protected $recur = null;
+    protected $cvd = null;
+    protected $avs = null;
+    protected $convFee = null;
+    protected $ach = null;
+    protected $sessionAccountInfo = null;
+    protected $attributeAccountInfo = null;
+    protected $level23Data = null;
 
     public function getCustInfo()
     {

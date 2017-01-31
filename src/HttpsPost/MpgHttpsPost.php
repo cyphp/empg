@@ -34,8 +34,8 @@ class MpgHttpsPost extends AbstractHttpsPost implements XmlSerializable
         $type = $this->request->getIsMPI() ? 'MpiRequest' : 'request';
 
         $serialized[$type] = [
-            'store_id' => $this->storeId,
-            'api_token' => $this->apiToken,
+            'store_id' => $this->config->getStoreId(),
+            'api_token' => $this->config->getApiToken(),
             $this->request
         ];
 

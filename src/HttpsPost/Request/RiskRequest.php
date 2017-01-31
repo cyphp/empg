@@ -2,8 +2,6 @@
 
 namespace Empg\HttpsPost\Request;
 
-use Empg\Mpg\Globals;
-
 class RiskRequest extends AbstractRequest
 {
     protected $txnTypes = [
@@ -11,23 +9,6 @@ class RiskRequest extends AbstractRequest
         'attribute_query' => ['order_id', 'policy_id', 'service_type'],
         'assert' => ['orig_order_id', 'activities_description', 'impact_description', 'confidence_description'],
     ];
-
-    public function getURL()
-    {
-        //$txnType = $this->getTransactionType();
-
-        $hostId = 'MONERIS'.$this->procCountryCode.$this->testMode.'_HOST';
-        $fileId = 'MONERIS'.$this->procCountryCode.'_FILE';
-
-        $url = Globals::MONERIS_PROTOCOL.'://'.
-            constant(Globals::class.'::'.$hostId).':'.
-            Globals::MONERIS_PORT.
-            constant(Globals::class.'::'.$fileId);
-
-        //echo "PostURL: " . $url;
-
-        return $url;
-    }
 
     public function toXML()
     {

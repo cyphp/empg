@@ -2,6 +2,7 @@
 
 namespace Empg\HttpsPost\Request;
 
+use Empg\Mpg\Globals;
 use Empg\HttpsPost\Transaction\AbstractTransaction;
 
 abstract class AbstractRequest
@@ -19,6 +20,13 @@ abstract class AbstractRequest
 
         $this->txnArray = $txn;
         $this->transactions = new \ArrayObject($txn);
+    }
+
+    public function isRequestOfUSService()
+    {
+        $type = $this->getTransactionType();
+
+        return strpos($type, 'us_') !== false;
     }
 
     public function getTransactionIterator()
@@ -39,6 +47,4 @@ abstract class AbstractRequest
             $this->testMode = '';
         }
     }
-
-    abstract public function getURL();
 }

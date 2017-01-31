@@ -13,18 +13,20 @@ class Configuration
     protected $storeId;
     protected $settings;
 
-    protected $env = self::ENV_PROD;
+    protected $options;
 
     public function __construct($storeId, $apiToken, array $options = [])
     {
         $this->apiToken = $apiToken;
         $this->storeId = $storeId;
-
-        if (isset($options['env'])) {
-            $this->env = $options['env'];
-        }
+        $this->options = $options;
 
         $this->settings = Yaml::parse(file_get_contents(__DIR__.'/../config/'.$this->env.'.yml'));
+    }
+
+    public function isDebugging()
+    {
+        return $this->options['debug'];
     }
 
     public function getApiToken()

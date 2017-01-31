@@ -6,7 +6,7 @@ use Sabre\Xml\Writer;
 use Empg\Configuration;
 use Empg\HttpsPost\Request\AbstractRequest;
 
-abstract class AbstractHttpsPost
+abstract class AbstractHttpsPost implements ExecutableInterface
 {
     protected $config;
     protected $appVersion;

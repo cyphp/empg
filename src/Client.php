@@ -9,11 +9,14 @@ class Client
 {
     protected $config;
 
-    public function __construct(string $storeId, string $apiToken, $env = Configuration::ENV_PROD)
+    public function __construct(string $storeId, string $apiToken, $options = [])
     {
-        $this->config = new Configuration($storeId, $apiToken, [
-            'env' => $env,
-        ]);
+        $options = array_merge([
+            'env' => Configuration::ENV_PROD,
+            'debug' => false,
+        ], $options);
+
+        $this->config = new Configuration($storeId, $apiToken, $options);
     }
 
     public function post(MpgRequest $request)

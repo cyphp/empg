@@ -11,13 +11,12 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\TooManyRedirectsException;
 
-class HttpsPostHandler
+class HttpsPostHandler implements ExecutableInterface
 {
     protected $url;
     protected $config;
     protected $dataToSend;
-    protected $clientTimeOut;
-    protected $apiVersion;
+
     protected $response;
     protected $debug = false; //default is false for production release
 
@@ -32,7 +31,7 @@ class HttpsPostHandler
     {
         $settings = $this->config->getSettings();
 
-        if ($this->debug == true) {
+        if ($this->config->isDebugging()) {
             echo 'DataToSend= '.$this->dataToSend;
             echo "\n\nPostURL= ".$this->url;
         }
@@ -45,8 +44,8 @@ class HttpsPostHandler
         ]);
 
         try {
-            $guzzleResponse = $client->post($url, [
-                'body' => $dataToSend,
+            $guzzleResponse = $client->post($this->url, [
+                'body' => $this->dataToSend,
             ]);
 
             $this->response = (string) $guzzleResponse->getBody();
@@ -73,9 +72,11 @@ class HttpsPostHandler
             echo Psr7\str($e->getResponse());
         }
 
-        if ($this->debug == true) {
+        if ($this->config->isDebugging()) {
             echo "\n\nRESPONSE= $this->response\n";
         }
+
+        return $this;
     }
 
     public function getHttpsResponse()

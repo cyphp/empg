@@ -30,6 +30,13 @@ $response = $client->post(
     )
 );
 ```
+## Use Test Endpoints
+```php
+
+$client = new Client('MY_STORE_ID', 'MY_API_TOKEN', [
+    'env' => Empg\Configuration::ENV_TEST,
+]);
+```
 
 ## License
 MIT

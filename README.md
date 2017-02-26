@@ -14,6 +14,12 @@ Inspired by https://github.com/Moneris/eCommerce-Unified-API-PHP
 - Composer package
 - Mimic as much as original class nomenclature
 
+## Install
+
+```bash
+composer require cyphp/empg
+```
+
 ## Example
 ```php
 require_once './vender/autoload.php';
